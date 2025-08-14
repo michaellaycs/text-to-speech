@@ -42,9 +42,9 @@ export class TTSController {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid request data',
-            details: validation.error.errors,
+            details: validation.error.issues,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -52,7 +52,7 @@ export class TTSController {
       const { content, settings } = validation.data;
 
       // Get session ID from headers (validation handled by middleware)
-      const sessionId = req.headers['x-session-id'] as string;
+      const sessionId = req.headers['x-session-id'] as string || 'default-session';
 
       console.log(`TTS conversion request - Session: ${sessionId}, Content length: ${content.length}`);
 
@@ -93,11 +93,11 @@ export class TTSController {
 
       console.log(`TTS conversion successful - Audio ID: ${audioId}, Service: ${conversionResult.metadata.ttsService}`);
 
-      res.status(200).json(audioContent);
+      return res.status(200).json(audioContent);
 
     } catch (error) {
       console.error('TTS conversion error:', error);
-      next(error);
+      return next(error);
     }
   };
 
@@ -114,9 +114,9 @@ export class TTSController {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid request parameters',
-            details: validation.error.errors,
+            details: validation.error.issues,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -132,12 +132,12 @@ export class TTSController {
             code: 'CONVERSION_NOT_FOUND',
             message: `Conversion with ID ${id} not found`,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         id: status.id,
         status: status.status,
         progress: status.progress,
@@ -148,7 +148,7 @@ export class TTSController {
 
     } catch (error) {
       console.error('Get status error:', error);
-      next(error);
+      return next(error);
     }
   };
 
@@ -156,7 +156,7 @@ export class TTSController {
    * GET /api/tts/providers/status
    * Get status of all TTS providers
    */
-  getProvidersStatus = async (req: Request, res: Response, next: NextFunction) => {
+  getProvidersStatus = async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const providersStatus = await this.ttsOrchestrator.getProvidersStatus();
       

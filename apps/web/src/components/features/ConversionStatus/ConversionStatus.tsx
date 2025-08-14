@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConversionStatus as ConversionStatusType } from '@/types/tts';
+import type { ConversionStatus as ConversionStatusType } from '@/types/tts';
 import styles from './ConversionStatus.module.css';
 
 export interface ConversionStatusProps {
@@ -67,11 +67,11 @@ export const ConversionStatus: React.FC<ConversionStatusProps> = ({
   };
 
   const shouldShowProgressBar = (): boolean => {
-    return isConverting || (status && status.status !== 'completed' && status.status !== 'failed');
+    return isConverting || Boolean(status && status.status !== 'completed' && status.status !== 'failed');
   };
 
   const shouldShowRetryButton = (): boolean => {
-    return (error || status?.status === 'failed') && onRetry !== undefined;
+    return Boolean(error || status?.status === 'failed') && onRetry !== undefined;
   };
 
   return (

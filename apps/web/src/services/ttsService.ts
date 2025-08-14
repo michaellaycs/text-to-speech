@@ -97,7 +97,17 @@ export class TTSService {
     }>;
     timestamp: string;
   }> {
-    const response = await this.request('/tts/providers/status', {
+    const response = await this.request<{
+      providers: Array<{
+        name: string;
+        priority: number;
+        available: boolean;
+        responseTime?: number;
+        errorRate?: number;
+        lastCheck: string;
+      }>;
+      timestamp: string;
+    }>('/tts/providers/status', {
       method: 'GET'
     });
 
@@ -131,7 +141,16 @@ export class TTSService {
     downloadUrl: string;
     timestamp: string;
   }> {
-    const response = await this.request(`/audio/${audioId}/info`, {
+    const response = await this.request<{
+      id: string;
+      size: number;
+      format: string;
+      duration: number;
+      createdAt: string;
+      streamUrl: string;
+      downloadUrl: string;
+      timestamp: string;
+    }>(`/audio/${audioId}/info`, {
       method: 'GET'
     });
 
@@ -276,9 +295,10 @@ export class TTSService {
       }
 
       // Network or other errors
+      const errorMessage = error instanceof Error ? error.message : String(error);
       throw new TTSApiError({
         code: 'NETWORK_ERROR',
-        message: `Request failed: ${error.message}`,
+        message: `Request failed: ${errorMessage}`,
         timestamp: new Date().toISOString()
       });
     }

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { ttsService, TTSApiError } from '@/services/ttsService';
-import { 
+import type { 
   AudioContent, 
   AudioSettings, 
   ConversionStatus,
@@ -74,27 +74,7 @@ export function useTTS(): TTSHookState & TTSHookActions {
     }
   }, []);
 
-  const convertWithStatusPolling = useCallback(async (
-    content: string,
-    settings?: Partial<AudioSettings>
-  ): Promise<AudioContent> => {
-    try {
-      setIsConverting(true);
-      setError(null);
-      setProgress(0);
-      setConversionStatus(null);
-      setCurrentAudio(null);
-
-      console.log('Starting TTS conversion with status polling...', { contentLength: content.length });
-
-      // This would be used if we had a different API that returns conversion ID first
-      // For now, our API is synchronous, so we use the direct convert method
-      return await convert(content, settings);
-
-    } catch (error) {
-      throw error;
-    }
-  }, [convert]);
+  // Removed convertWithStatusPolling as it's not needed for the current implementation
 
   const clearError = useCallback(() => {
     setError(null);
@@ -151,7 +131,6 @@ export function useTTS(): TTSHookState & TTSHookActions {
     
     // Actions
     convert,
-    convertWithStatusPolling,
     clearError,
     reset,
     getAudioUrl,

@@ -107,12 +107,13 @@ export class TTSOrchestrator {
           return result;
           
         } catch (error) {
-          console.warn(`Provider ${provider.name} failed:`, error.message);
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          console.warn(`Provider ${provider.name} failed:`, errorMessage);
           lastError = error instanceof TTSError ? error : new TTSError(
-            `Provider ${provider.name} failed: ${error.message}`,
+            `Provider ${provider.name} failed: ${errorMessage}`,
             TTS_ERROR_CODES.CONVERSION_FAILED,
             provider.name,
-            error
+            error instanceof Error ? error : undefined
           );
           
           // Continue to next provider
@@ -129,11 +130,12 @@ export class TTSOrchestrator {
 
     } catch (error) {
       // Update status to failed
+      const errorMessage = error instanceof Error ? error.message : String(error);
       const ttsError = error instanceof TTSError ? error : new TTSError(
-        `Conversion failed: ${error.message}`,
+        `Conversion failed: ${errorMessage}`,
         TTS_ERROR_CODES.CONVERSION_FAILED,
         'TTSOrchestrator',
-        error
+        error instanceof Error ? error : undefined
       );
 
       this.updateConversionStatus(

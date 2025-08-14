@@ -65,6 +65,8 @@ export interface TTSHookActions {
   reset: () => void;
   getAudioUrl: (audioId: string) => string;
   getDownloadUrl: (audioId: string) => string;
+  deleteAudio: (audioId: string) => Promise<void>;
+  getAudioInfo: (audioId: string) => Promise<any>;
 }
 
 // Component prop types

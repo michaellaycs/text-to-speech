@@ -21,7 +21,7 @@ export class WebSpeechProvider implements ITTSProvider {
     return [];
   }
 
-  async convert(text: string, settings?: Partial<AudioSettings>): Promise<TTSConversionResult> {
+  async convert(_text: string, _settings?: Partial<AudioSettings>): Promise<TTSConversionResult> {
     throw new TTSError(
       'Web Speech API is not available on server-side. Use client-side implementation.',
       TTS_ERROR_CODES.SERVICE_UNAVAILABLE,
