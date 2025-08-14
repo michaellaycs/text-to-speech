@@ -1,0 +1,70 @@
+/* CSS Custom Properties / Variables */
+:root {
+  /* Colors */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary: var(--color-primary-500);
+  --color-primary-alpha: rgba(59, 130, 246, 0.2);
+  
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-500: #6b7280;
+  --color-gray-700: #374151;
+  --color-gray-900: #111827;
+  
+  /* Semantic Colors */
+  --color-background: #ffffff;
+  --color-background-input: #ffffff;
+  --color-background-disabled: var(--color-gray-50);
+  --color-border: var(--color-gray-200);
+  --color-border-hover: var(--color-gray-500);
+  --color-text-primary: var(--color-gray-900);
+  --color-text-placeholder: var(--color-gray-500);
+  --color-text-disabled: var(--color-gray-500);
+  
+  /* Error Colors */
+  --color-error: #ef4444;
+  --color-error-background: #fef2f2;
+  --color-error-alpha: rgba(239, 68, 68, 0.2);
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+
+  /* Typography */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  
+  /* Font Families */
+  --font-family-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  
+  /* Font Sizes */
+  --font-size-body: var(--text-base);
+  --font-size-body-mobile: var(--text-sm);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  /* Breakpoints (for reference in JavaScript) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}

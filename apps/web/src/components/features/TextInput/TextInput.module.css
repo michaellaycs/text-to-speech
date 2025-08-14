@@ -1,0 +1,101 @@
+.textInput {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.textAreaContainer {
+  position: relative;
+  margin-bottom: var(--space-3);
+}
+
+.feedback {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  min-height: 24px;
+}
+
+.characterCountContainer {
+  display: flex;
+  align-items: center;
+}
+
+.characterCount {
+  font-size: var(--text-sm);
+  color: var(--color-text-placeholder);
+  font-weight: 500;
+}
+
+.characterCountWarning {
+  font-size: var(--text-sm);
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.characterCountError {
+  font-size: var(--text-sm);
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.characterCountValidating {
+  font-size: var(--text-sm);
+  color: var(--color-text-placeholder);
+  font-weight: 500;
+  font-style: italic;
+}
+
+.errorMessage {
+  background-color: var(--color-error-background);
+  border: 1px solid var(--color-error);
+  border-radius: 6px;
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  margin-left: auto;
+  max-width: 300px;
+  text-align: right;
+}
+
+.errorMessage::before {
+  content: '⚠️ ';
+  margin-right: var(--space-1);
+}
+
+@media (max-width: 768px) {
+  .feedback {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: stretch;
+  }
+  
+  .characterCountContainer {
+    justify-content: center;
+  }
+  
+  .errorMessage {
+    margin-left: 0;
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .textInput {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .characterCount,
+  .characterCountWarning,
+  .characterCountError {
+    font-size: var(--text-xs);
+  }
+  
+  .errorMessage {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+}
