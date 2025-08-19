@@ -17,6 +17,20 @@ const audioController = new AudioController();
 router.get('/stream/:id', audioController.streamAudio);
 
 /**
+ * OPTIONS /api/audio/stream/:id
+ * Handle preflight requests for audio streaming
+ */
+router.options('/stream/:id', (req, res) => {
+  res.set({
+    'Access-Control-Allow-Origin': req.headers.origin || '*',
+    'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+    'Access-Control-Allow-Headers': 'Range, Content-Type',
+    'Access-Control-Max-Age': '86400'
+  });
+  res.status(204).send();
+});
+
+/**
  * GET /api/audio/:id
  * Download audio file directly
  * 

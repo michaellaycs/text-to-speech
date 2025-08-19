@@ -43,10 +43,15 @@ export class GoogleTTSProvider implements ITTSProvider {
 
     try {
       // Test API availability with a simple voices list request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      
       const response = await fetch(`${this.baseUrl}/voices?key=${this.apiKey}`, {
         method: 'GET',
-        timeout: 2000,
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
       return response.ok;
     } catch (error) {
       console.error('Google TTS availability check failed:', error);
@@ -58,10 +63,15 @@ export class GoogleTTSProvider implements ITTSProvider {
     if (!this.apiKey) return [];
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      
       const response = await fetch(`${this.baseUrl}/voices?key=${this.apiKey}`, {
         method: 'GET',
-        timeout: 2000,
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);
@@ -150,12 +160,14 @@ export class GoogleTTSProvider implements ITTSProvider {
     } catch (error) {
       const elapsed = Date.now() - startTime;
       
-      if (error.name === 'AbortError' || elapsed >= this.timeout) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      if ((error instanceof Error && error.name === 'AbortError') || elapsed >= this.timeout) {
         throw new TTSError(
           `Google TTS conversion timeout after ${elapsed}ms`,
           TTS_ERROR_CODES.TIMEOUT,
           this.name,
-          error
+          error instanceof Error ? error : undefined
         );
       }
 
@@ -164,10 +176,10 @@ export class GoogleTTSProvider implements ITTSProvider {
       }
 
       throw new TTSError(
-        `Google TTS conversion failed: ${error.message}`,
+        `Google TTS conversion failed: ${errorMessage}`,
         TTS_ERROR_CODES.CONVERSION_FAILED,
         this.name,
-        error
+        error instanceof Error ? error : undefined
       );
     }
   }

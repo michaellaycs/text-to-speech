@@ -1,6 +1,11 @@
 import { ITTSProvider, AudioSettings, TTSConversionResult, TTSError, TTS_ERROR_CODES } from '../providers/interfaces';
 import { WebSpeechProvider } from '../providers/WebSpeechProvider';
+import { TTSMP3Provider } from '../providers/TTSMP3Provider';
 import { GoogleTTSProvider } from '../providers/GoogleTTSProvider';
+import { FreeTTSProvider } from '../providers/FreeTTSProvider';
+import { ESpeak_NGProvider } from '../providers/ESpeak_NGProvider';
+import { ResponsiveVoiceProvider } from '../providers/ResponsiveVoiceProvider';
+import { MockTTSProvider } from '../providers/MockTTSProvider';
 import { config } from '../config/environment';
 
 export enum ProcessingStatus {
@@ -33,8 +38,13 @@ export class TTSOrchestrator {
   constructor() {
     // Initialize providers in priority order
     this.providers = [
-      new WebSpeechProvider(), // Priority 1 - but will be unavailable server-side
-      new GoogleTTSProvider(),  // Priority 2 - main fallback
+      new WebSpeechProvider(),     // Priority 1 - unavailable server-side
+      new TTSMP3Provider(),        // Priority 1.5 - free high-quality TTS service
+      new GoogleTTSProvider(),     // Priority 2 - requires API key + billing
+      new FreeTTSProvider(),       // Priority 3 - free online TTS (StreamElements)
+      new ESpeak_NGProvider(),     // Priority 4 - free TTS via VoiceRSS
+      new ResponsiveVoiceProvider(), // Priority 5 - free TTS service
+      new MockTTSProvider(),       // Priority 10 - testing fallback
     ];
 
     // Sort by priority (lower number = higher priority)

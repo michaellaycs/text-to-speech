@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { TextArea } from '@/components/ui';
+import { TextArea, AudioPlayer } from '@/components/ui';
 import { ConversionStatus } from '@/components/features';
 import { validateTextLength, getApproachingLimitMessage } from '@/utils/validation';
-import { MAX_CONTENT_LENGTH, VALIDATION_DEBOUNCE_DELAY } from '@/utils/constants';
+import { MAX_CONTENT_LENGTH, VALIDATION_DEBOUNCE_DELAY, DEFAULT_JOKES } from '@/utils/constants';
 import { useTTS } from '@/hooks/useTTS';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import type { AudioContent } from '@/types/tts';
 import styles from './TextInput.module.css';
 
@@ -42,6 +43,13 @@ export const TextInput: React.FC<TextInputProps> = ({
     getAudioUrl
   } = useTTS();
 
+  // Audio player functionality
+  const audioPlayer = useAudioPlayer({
+    onError: (error) => {
+      console.error('Audio player error:', error);
+    }
+  });
+
   // Debounce text changes
   useEffect(() => {
     setIsValidating(true);
@@ -67,15 +75,31 @@ export const TextInput: React.FC<TextInputProps> = ({
     }
   }, [debouncedText, isValidating, onTextChange]);
 
-  // Handle TTS audio generation completion
+  // Handle TTS audio generation completion and load into audio player
   useEffect(() => {
     if (currentAudio) {
+      const audioUrl = getAudioUrl(currentAudio.id);
+      if (audioUrl) {
+        audioPlayer.loadAudio(currentAudio, audioUrl);
+      }
       onAudioGenerated?.(currentAudio);
+    } else {
+      // Clear audio player when no current audio
+      audioPlayer.clearAudio();
     }
-  }, [currentAudio, onAudioGenerated]);
+  }, [currentAudio, getAudioUrl, audioPlayer, onAudioGenerated]);
 
   const handleTextChange = useCallback((value: string) => {
     setText(value);
+  }, []);
+
+  const handleJokeSelect = useCallback((jokeId: string) => {
+    if (jokeId === '') return;
+    
+    const selectedJoke = DEFAULT_JOKES.find(joke => joke.id === jokeId);
+    if (selectedJoke) {
+      setText(selectedJoke.content);
+    }
   }, []);
 
   const handleConvertToSpeech = useCallback(async () => {
@@ -135,6 +159,27 @@ export const TextInput: React.FC<TextInputProps> = ({
 
   return (
     <div className={combinedClassName} data-testid={testId}>
+      {/* Default Jokes Selector */}
+      <div className={styles.jokeSelector}>
+        <label htmlFor="joke-select" className={styles.jokeSelectorLabel}>
+          Quick Comedy Selection:
+        </label>
+        <select
+          id="joke-select"
+          className={styles.jokeSelectorDropdown}
+          onChange={(e) => handleJokeSelect(e.target.value)}
+          defaultValue=""
+          data-testid={testId ? `${testId}-joke-selector` : 'joke-selector'}
+        >
+          <option value="">Choose a default joke...</option>
+          {DEFAULT_JOKES.map((joke) => (
+            <option key={joke.id} value={joke.id}>
+              {joke.title}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className={styles.textAreaContainer}>
         <TextArea
           value={text}
@@ -173,16 +218,13 @@ export const TextInput: React.FC<TextInputProps> = ({
         </button>
         
         {/* Audio Player */}
-        {currentAudio && (
-          <div className={styles.audioPlayer}>
-            <audio
-              controls
-              src={getAudioUrl(currentAudio.id)}
-              className={styles.audioElement}
+        {currentAudio && audioPlayer.audioUrl && (
+          <div className={styles.audioPlayerContainer}>
+            <AudioPlayer
+              src={audioPlayer.audioUrl}
+              className={styles.audioPlayer}
               data-testid={testId ? `${testId}-audio-player` : 'audio-player'}
-            >
-              Your browser does not support the audio element.
-            </audio>
+            />
             <div className={styles.audioInfo}>
               <span className={styles.audioDuration}>
                 Duration: {Math.round(currentAudio.duration)}s

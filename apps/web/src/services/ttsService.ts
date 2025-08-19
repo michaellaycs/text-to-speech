@@ -37,7 +37,7 @@ export interface ConversionStatus {
 export interface TTSError {
   code: string;
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
   timestamp: string;
   requestId?: string;
 }
@@ -46,7 +46,7 @@ export class TTSService {
   private baseURL: string;
   private sessionId: string | null = null;
 
-  constructor(baseURL: string = 'http://localhost:5000/api') {
+  constructor(baseURL: string = 'http://localhost:5002/api') {
     this.baseURL = baseURL;
   }
 
@@ -242,11 +242,14 @@ export class TTSService {
     endpoint: string,
     options: {
       method: 'GET' | 'POST' | 'DELETE';
-      body?: any;
+      body?: Record<string, unknown> | string;
       headers?: Record<string, string>;
     }
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+    console.log('TTS API Request URL:', url);
+    console.log('TTS API Request method:', options.method);
+    console.log('TTS API Request body:', options.body);
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -307,7 +310,7 @@ export class TTSService {
   /**
    * Check if error is a validation error (shouldn't retry)
    */
-  private isValidationError(error: any): boolean {
+  private isValidationError(error: unknown): boolean {
     return error instanceof TTSApiError && 
            error.code === 'VALIDATION_ERROR';
   }
@@ -325,7 +328,7 @@ export class TTSService {
  */
 export class TTSApiError extends Error {
   public code: string;
-  public details?: any;
+  public details?: Record<string, unknown>;
   public timestamp: string;
   public requestId?: string;
 

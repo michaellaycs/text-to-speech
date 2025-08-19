@@ -1,0 +1,346 @@
+/* AudioPlayer Component Styles */
+
+.audioPlayer {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
+  transition: box-shadow 0.2s ease;
+}
+
+.audioPlayer:focus-within {
+  outline: 2px solid var(--primary-color, #007bff);
+  outline-offset: 2px;
+}
+
+.audioPlayer:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Error State */
+.error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  color: #c33;
+}
+
+.errorIcon {
+  font-size: 18px;
+}
+
+.errorMessage {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Controls Section */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+/* Play/Pause Button */
+.playButton {
+  background: var(--primary-color, #4caf50);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.playButton:hover:not(:disabled) {
+  background: var(--primary-hover, #388e3c);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.playButton:active {
+  transform: scale(0.95);
+}
+
+.playButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.playButton:focus {
+  outline: 2px solid var(--primary-color, #4caf50);
+  outline-offset: 2px;
+}
+
+.loading {
+  background: #6c757d;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.playIcon {
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 12px solid white;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  margin-left: 3px;
+}
+
+.pauseIcon {
+  display: block;
+  line-height: 1;
+}
+
+/* Time Display */
+.timeDisplay {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  min-width: 80px;
+}
+
+.currentTime {
+  color: var(--primary-color, #4caf50);
+}
+
+.separator {
+  color: #666;
+}
+
+.duration {
+  color: #666;
+}
+
+/* Volume Controls */
+.volumeControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.muteButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.muteButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.muteButton:focus {
+  outline: 2px solid var(--primary-color, #007bff);
+  outline-offset: 2px;
+}
+
+.volumeSlider {
+  width: 80px;
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--primary-color, #4caf50);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.volumeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--primary-color, #4caf50);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.volumeSlider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.volumeSlider:focus {
+  outline: 2px solid var(--primary-color, #4caf50);
+  outline-offset: 2px;
+}
+
+.volumePercentage {
+  font-size: 12px;
+  color: #666;
+  min-width: 30px;
+  text-align: right;
+}
+
+/* Progress Section */
+.progressSection {
+  margin-top: 8px;
+}
+
+.progressBar {
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.progressBarBackground {
+  position: relative;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color, #4caf50), var(--primary-hover, #388e3c));
+  border-radius: 3px;
+  transition: width 0.1s ease;
+}
+
+.progressBarThumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: var(--primary-color, #4caf50);
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.progressBar:hover .progressBarThumb {
+  opacity: 1;
+}
+
+.progressBar:hover .progressBarBackground {
+  height: 8px;
+}
+
+.progressBar:focus {
+  outline: 2px solid var(--primary-color, #4caf50);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .audioPlayer {
+    padding: 12px;
+  }
+  
+  .controls {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .volumeControls {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 8px;
+    justify-content: space-between;
+  }
+  
+  .volumeSlider {
+    flex: 1;
+    margin: 0 12px;
+    width: auto;
+  }
+  
+  .timeDisplay {
+    font-size: 12px;
+  }
+  
+  .playButton {
+    width: 44px;
+    height: 44px;
+    font-size: 14px;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .audioPlayer {
+    border: 2px solid #000;
+  }
+  
+  .playButton {
+    border: 2px solid #000;
+  }
+  
+  .progressBarFill {
+    background: #000;
+  }
+  
+  .progressBarThumb {
+    background: #000;
+    border-color: #fff;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .playButton,
+  .progressBarFill,
+  .progressBarThumb,
+  .volumeSlider::-webkit-slider-thumb,
+  .volumeSlider::-moz-range-thumb {
+    transition: none;
+  }
+  
+  .spinner {
+    animation: none;
+  }
+  
+  .playButton:hover:not(:disabled) {
+    transform: none;
+  }
+}

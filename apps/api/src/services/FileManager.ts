@@ -1,8 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { createReadStream, createWriteStream, existsSync } from 'fs';
+import { createReadStream, existsSync } from 'fs';
 import { config } from '../config/environment';
-import { AudioContent } from '../providers/interfaces';
 
 export interface FileMetadata {
   size: number;
@@ -79,8 +78,9 @@ export class FileManager {
       };
 
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       console.error(`Failed to save audio file ${audioId}:`, error);
-      throw new Error(`File save failed: ${error.message}`);
+      throw new Error(`File save failed: ${errorMessage}`);
     }
   }
 

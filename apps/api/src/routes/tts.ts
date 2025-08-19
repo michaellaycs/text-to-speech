@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import { TTSController } from '../controllers/TTSController';
-// Import session validator when it's available
-// import { sessionValidator } from '../middleware/sessionValidator';
 
 const router = Router();
 const ttsController = new TTSController();
@@ -18,11 +16,8 @@ const ttsController = new TTSController();
  *     voice?: string
  *   }
  * }
- * 
- * Headers: X-Session-ID required
  */
 router.post('/convert', 
-  // sessionValidator, // TODO: Add when session middleware is implemented
   ttsController.convertText
 );
 

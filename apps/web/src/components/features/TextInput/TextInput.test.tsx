@@ -17,6 +17,29 @@ jest.mock('@/hooks/useTTS', () => ({
   }),
 }));
 
+// Mock the AudioPlayer hook
+jest.mock('@/hooks/useAudioPlayer', () => ({
+  useAudioPlayer: () => ({
+    isPlaying: false,
+    currentTime: 0,
+    duration: 0,
+    volume: 75,
+    isMuted: false,
+    isLoading: false,
+    error: null,
+    currentAudio: null,
+    audioUrl: null,
+    play: jest.fn(),
+    pause: jest.fn(),
+    seek: jest.fn(),
+    setVolume: jest.fn(),
+    toggleMute: jest.fn(),
+    loadAudio: jest.fn(),
+    clearAudio: jest.fn(),
+    reset: jest.fn()
+  })
+}));
+
 // Mock the ConversionStatus component
 jest.mock('@/components/features', () => ({
   ...jest.requireActual('@/components/features'),

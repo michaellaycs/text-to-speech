@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { FileManager } from '../services/FileManager';
-import * as path from 'path';
 
 // Validation schemas
 const AudioParamsSchema = z.object({
@@ -19,7 +18,7 @@ export class AudioController {
    * GET /api/audio/stream/:id
    * Stream audio file for web playback
    */
-  streamAudio = async (req: Request, res: Response, next: NextFunction) => {
+  streamAudio = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       // Validate parameters
       const validation = AudioParamsSchema.safeParse(req.params);
@@ -28,9 +27,9 @@ export class AudioController {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid audio ID',
-            details: validation.error.errors,
+            details: validation.error.issues,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -45,7 +44,7 @@ export class AudioController {
             code: 'AUDIO_NOT_FOUND',
             message: `Audio file with ID ${id} not found`,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -58,49 +57,56 @@ export class AudioController {
             code: 'AUDIO_METADATA_NOT_FOUND',
             message: `Audio metadata for ID ${id} not found`,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
 
-      // Set appropriate headers for audio streaming
+      // Set appropriate headers for audio streaming with CORS support
       res.set({
         'Content-Type': this.getContentType(metadata.format),
         'Content-Length': metadata.size.toString(),
         'Accept-Ranges': 'bytes',
         'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
         'X-Audio-Duration': metadata.duration.toString(),
-        'X-Audio-Format': metadata.format
+        'X-Audio-Format': metadata.format,
+        // Additional CORS headers for HTML5 audio
+        'Access-Control-Allow-Origin': req.headers.origin || '*',
+        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+        'Access-Control-Allow-Headers': 'Range, Content-Type',
+        'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges',
+        'Cross-Origin-Resource-Policy': 'cross-origin'
       });
+
+      // Get the audio file as buffer for proper streaming
+      const audioBuffer = await this.fileManager.getAudioFile(id);
+      if (!audioBuffer) {
+        return res.status(404).json({
+          error: {
+            code: 'AUDIO_FILE_ERROR',
+            message: 'Failed to read audio file',
+            timestamp: new Date().toISOString(),
+            requestId: (req as any).id
+          }
+        });
+      }
 
       // Handle range requests for audio seeking
       const range = req.headers.range;
       if (range) {
-        const audioStream = this.fileManager.getAudioStream(id);
-        if (!audioStream) {
-          return res.status(404).json({
-            error: {
-              code: 'AUDIO_STREAM_ERROR',
-              message: 'Failed to create audio stream',
-              timestamp: new Date().toISOString(),
-              requestId: req.id
-            }
-          });
-        }
-
         // Parse range header
         const rangeMatch = range.match(/bytes=(\d+)-(\d*)/);
         if (rangeMatch) {
           const start = parseInt(rangeMatch[1], 10);
-          const end = rangeMatch[2] ? parseInt(rangeMatch[2], 10) : metadata.size - 1;
+          const end = rangeMatch[2] ? parseInt(rangeMatch[2], 10) : audioBuffer.length - 1;
 
-          if (start >= metadata.size || end >= metadata.size || start > end) {
+          if (start >= audioBuffer.length || end >= audioBuffer.length || start > end) {
             return res.status(416).json({
               error: {
                 code: 'INVALID_RANGE',
                 message: 'Requested range not satisfiable',
                 timestamp: new Date().toISOString(),
-                requestId: req.id
+                requestId: (req as any).id
               }
             });
           }
@@ -108,12 +114,14 @@ export class AudioController {
           // Set partial content headers
           res.status(206);
           res.set({
-            'Content-Range': `bytes ${start}-${end}/${metadata.size}`,
+            'Content-Range': `bytes ${start}-${end}/${audioBuffer.length}`,
             'Content-Length': (end - start + 1).toString()
           });
 
-          // Create range stream (simplified - in production would use proper range streaming)
-          audioStream.pipe(res);
+          // Send the requested byte range
+          const chunk = audioBuffer.slice(start, end + 1);
+          console.log(`Audio range request: ${start}-${end}/${audioBuffer.length} (${chunk.length} bytes)`);
+          res.send(chunk);
         } else {
           // Invalid range header
           return res.status(400).json({
@@ -121,26 +129,14 @@ export class AudioController {
               code: 'INVALID_RANGE_HEADER',
               message: 'Invalid range header format',
               timestamp: new Date().toISOString(),
-              requestId: req.id
+              requestId: (req as any).id
             }
           });
         }
       } else {
-        // Normal streaming without range
-        const audioStream = this.fileManager.getAudioStream(id);
-        if (!audioStream) {
-          return res.status(404).json({
-            error: {
-              code: 'AUDIO_STREAM_ERROR',
-              message: 'Failed to create audio stream',
-              timestamp: new Date().toISOString(),
-              requestId: req.id
-            }
-          });
-        }
-
-        // Stream the complete file
-        audioStream.pipe(res);
+        // Normal streaming without range - send complete file
+        console.log(`Audio streaming started - ID: ${id}, Size: ${audioBuffer.length} bytes`);
+        res.send(audioBuffer);
       }
 
       console.log(`Audio streaming started - ID: ${id}, Size: ${metadata.size} bytes`);
@@ -155,7 +151,7 @@ export class AudioController {
    * GET /api/audio/:id
    * Download audio file directly
    */
-  downloadAudio = async (req: Request, res: Response, next: NextFunction) => {
+  downloadAudio = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       // Validate parameters
       const validation = AudioParamsSchema.safeParse(req.params);
@@ -164,9 +160,9 @@ export class AudioController {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid audio ID',
-            details: validation.error.errors,
+            details: validation.error.issues,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -181,7 +177,7 @@ export class AudioController {
             code: 'AUDIO_NOT_FOUND',
             message: `Audio file with ID ${id} not found`,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -194,7 +190,7 @@ export class AudioController {
             code: 'AUDIO_METADATA_NOT_FOUND',
             message: `Audio metadata for ID ${id} not found`,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -228,7 +224,7 @@ export class AudioController {
    * GET /api/audio/:id/info
    * Get audio file information
    */
-  getAudioInfo = async (req: Request, res: Response, next: NextFunction) => {
+  getAudioInfo = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       // Validate parameters
       const validation = AudioParamsSchema.safeParse(req.params);
@@ -237,9 +233,9 @@ export class AudioController {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid audio ID',
-            details: validation.error.errors,
+            details: validation.error.issues,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -254,7 +250,7 @@ export class AudioController {
             code: 'AUDIO_NOT_FOUND',
             message: `Audio file with ID ${id} not found`,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -267,7 +263,7 @@ export class AudioController {
             code: 'AUDIO_METADATA_NOT_FOUND',
             message: `Audio metadata for ID ${id} not found`,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -290,7 +286,7 @@ export class AudioController {
    * DELETE /api/audio/:id
    * Delete audio file
    */
-  deleteAudio = async (req: Request, res: Response, next: NextFunction) => {
+  deleteAudio = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       // Validate parameters
       const validation = AudioParamsSchema.safeParse(req.params);
@@ -299,9 +295,9 @@ export class AudioController {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid audio ID',
-            details: validation.error.errors,
+            details: validation.error.issues,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }
@@ -316,7 +312,7 @@ export class AudioController {
             code: 'AUDIO_NOT_FOUND',
             message: `Audio file with ID ${id} not found`,
             timestamp: new Date().toISOString(),
-            requestId: req.id
+            requestId: (req as any).id
           }
         });
       }

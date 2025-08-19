@@ -66,7 +66,7 @@ export interface TTSHookActions {
   getAudioUrl: (audioId: string) => string;
   getDownloadUrl: (audioId: string) => string;
   deleteAudio: (audioId: string) => Promise<void>;
-  getAudioInfo: (audioId: string) => Promise<any>;
+  getAudioInfo: (audioId: string) => Promise<AudioContent>;
 }
 
 // Component prop types
@@ -96,7 +96,7 @@ export interface TTSButtonProps {
 export interface TTSError {
   code: string;
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
   timestamp: string;
   requestId?: string;
 }

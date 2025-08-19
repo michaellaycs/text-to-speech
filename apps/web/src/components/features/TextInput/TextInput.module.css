@@ -4,6 +4,46 @@
   margin: 0 auto;
 }
 
+/* Joke Selector Styles */
+.jokeSelector {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  background: var(--color-background-secondary, #f8f9fa);
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: var(--border-radius-md, 8px);
+  transition: all 0.2s ease;
+}
+
+.jokeSelectorLabel {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-primary, #333);
+  margin-bottom: var(--space-2);
+}
+
+.jokeSelectorDropdown {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-background-primary, #ffffff);
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: var(--border-radius-sm, 6px);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary, #333);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.jokeSelectorDropdown:hover {
+  border-color: var(--color-primary, #1976d2);
+}
+
+.jokeSelectorDropdown:focus {
+  outline: none;
+  border-color: var(--color-primary, #1976d2);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
 .textAreaContainer {
   position: relative;
   margin-bottom: var(--space-3);
@@ -97,5 +137,99 @@
   .errorMessage {
     font-size: var(--text-xs);
     padding: var(--space-1) var(--space-2);
+  }
+}
+
+/* Audio Player Styles */
+.audioPlayerContainer {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-background-secondary, #f8f9fa);
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: var(--border-radius-md, 8px);
+  transition: all 0.2s ease;
+}
+
+.audioPlayer {
+  margin-bottom: var(--space-3);
+}
+
+.audioInfo {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary, #666);
+  flex-wrap: wrap;
+}
+
+.audioDuration,
+.audioSize,
+.audioService {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .audioInfo {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .audioPlayerContainer {
+    padding: var(--space-3);
+  }
+}
+
+/* Convert Section Styles */
+.convertSection {
+  margin-top: var(--space-4);
+}
+
+.convertButton {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary, #1976d2);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md, 8px);
+  font-size: var(--text-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: var(--space-3);
+}
+
+.convertButton:hover:not(:disabled) {
+  background: var(--color-primary-dark, #1565c0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.convertButton:disabled {
+  background: var(--color-background-tertiary, #f5f5f5);
+  color: var(--color-text-disabled, #9ca3af);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .jokeSelector {
+    padding: var(--space-2);
+  }
+  
+  .jokeSelectorLabel {
+    font-size: var(--text-xs);
+  }
+  
+  .jokeSelectorDropdown {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+  }
+  
+  .convertButton {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
   }
 }
